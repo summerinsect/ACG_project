@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { Platform } from './Platform.js'
 import { Road } from './Road.js'
 import { Door } from './Door.js'
+import { PressurePlate } from './PressurePlate.js'
+import { Key } from './Key.js'
 
 class LevelManager {
     constructor(game/*, levelId*/) {
@@ -105,11 +107,17 @@ class LevelManager {
     }
 
     initPressurePlates() {
-
+        this.pressurePlateInfo.forEach((info, index) => {
+            const pressurePlate = new PressurePlate(this, index);
+            this.pressurePlates.push(pressurePlate);
+        })
     }
 
     initKeys() {
-
+        this.keyInfo.forEach((info, index) => {
+            const key = new Key(this, index);
+            this.keys.push(key);
+        })
     }
 }
 
