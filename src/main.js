@@ -1,86 +1,54 @@
-import './style.css'
+// import './style.css'
 import * as THREE from 'three'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-// Create Scene
-const scene = new THREE.Scene()
-scene.background = new THREE.Color(0x20242c)
+class App {
+    constructor() {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
 
-// Create Camera
-const camera = new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    100
-)
+        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+        this.camera.position.set(0, 0, 4);
 
-camera.position.set(3, 2, 5)
-camera.lookAt(0, 0, 0)
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0xaaaaaa);
 
-// Create Renderer
-const renderer = new THREE.WebGLRenderer({
-    antialias: true
-})
+        const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.3);
+        this.scene.add(ambient);
 
-renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-)
+        const light = new THREE.DirectionalLight();
+        light.position.set(0.2, 1, 1);
+        this.scene.add(light);
 
-renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 2)
-)
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(this.renderer.domElement);
 
-document.querySelector('#app')
-    .appendChild(renderer.domElement)
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
 
-// Create Light
-const light = new THREE.DirectionalLight(
-    0xffffff,
-    2
-)
+        this.mesh = new THREE.Mesh(geometry, material);
 
-light.position.set(5, 5, 5)
-scene.add(light)
+        this.scene.add(this.mesh);
 
-scene.add(
-    new THREE.AmbientLight(0xffffff, 1)
-)
+        const controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-// Create Cube
-const geometry = new THREE.BoxGeometry()
+        this.renderer.setAnimationLoop(this.render.bind(this));
 
-const material = new THREE.MeshStandardMaterial({
-    color: 0x44aa88
-})
+        window.addEventListener('resize', this.resize.bind(this));
+    }
 
-const cube = new THREE.Mesh(
-    geometry,
-    material
-)
+    resize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 
-scene.add(cube)
-
-// Animation Loop
-function animate() {
-    requestAnimationFrame(animate)
-
-    cube.rotation.x += 0.01
-    cube.rotation.y += 0.01
-
-    renderer.render(scene, camera)
+    render() {
+        this.mesh.rotateY(0.01);
+        this.renderer.render(this.scene, this.camera);
+    }
 }
 
-animate()
-
-// Window Resize
-window.addEventListener('resize', () => {
-    camera.aspect =
-        window.innerWidth / window.innerHeight
-
-    camera.updateProjectionMatrix()
-
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    )
-})
+export { App };
