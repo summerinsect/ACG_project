@@ -8,7 +8,7 @@ class Game {
         document.body.appendChild(container);
 
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-        this.camera.position.set(0, 15, 5);
+        this.camera.position.set(0, 5, 10);
         this.camera.lookAt(0, 0, -10); 
 
         this.scene = new THREE.Scene();
