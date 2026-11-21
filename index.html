@@ -2,9 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/png" href="/game-icon.svg"/>
+        <link rel="icon" type="image/svg+xml" href="/game-icon.svg"/>
         <title>mywebgame</title>
         <style>
             body {
@@ -15,11 +14,11 @@
     </head>
     <body>
         <script type="module">
-            import { App } from './src/main.js';
+            import { Game } from './src/Game.js';
 
             document.addEventListener('DOMContentLoaded', () => {
-                const app = new App();
-                window.app = app;
+                const game = new Game();
+                window.game = game;
             });
         </script>
     </body>

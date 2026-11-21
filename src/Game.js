@@ -1,14 +1,15 @@
 // import './style.css'
 import * as THREE from 'three'
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { LevelManager } from './LevelManager.js'
 
-class App {
+class Game {
     constructor() {
         const container = document.createElement('div');
         document.body.appendChild(container);
 
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-        this.camera.position.set(0, 0, 4);
+        this.camera.position.set(0, 15, 5);
+        this.camera.lookAt(0, 0, -10); 
 
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0xaaaaaa);
@@ -25,18 +26,14 @@ class App {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(this.renderer.domElement);
 
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
-
-        this.mesh = new THREE.Mesh(geometry, material);
-
-        this.scene.add(this.mesh);
-
-        const controls = new OrbitControls(this.camera, this.renderer.domElement);
-
         this.renderer.setAnimationLoop(this.render.bind(this));
 
         window.addEventListener('resize', this.resize.bind(this));
+
+        this.levelManager = new LevelManager(this);
+
+        // 原型阶段默认加载一个固定场景
+        this.levelManager.initLevel();
     }
 
     resize() {
@@ -45,10 +42,10 @@ class App {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    render() {
-        this.mesh.rotateY(0.01);
+    render(time) {
+
         this.renderer.render(this.scene, this.camera);
     }
 }
 
-export { App };
+export { Game };
