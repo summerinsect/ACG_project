@@ -38,11 +38,12 @@ class LevelManager {
             { u: 0, v: 4, c: 2 },
         ];
 
-        // i 是 door 所在 road 的索引，d 是 door 在 road 的位置，p 是开门需要的 pressure plate
-        // p = [-1] 表示这扇门需要用钥匙打开，其他情况 p 是非空非负整数数组（正常来说 length <= 2）
+        // i 是 door 所在 road 的索引，d 是 door 在 road 的位置 [-1, 1]，p 是开门需要的 pressure plate
+        // p = -1 表示这扇门需要用钥匙打开，其他情况 p 是非负整数
         this.doorInfo = [
-            { i: 0, d: 0, p: [-1] },
-            { i: 5, d: 0.5, p: [0] },
+            { i: 0, d: -1, p: -1 },
+            { i: 5, d: 0, p: 0 },
+            { i: 3, d: 1, p: 1 },
         ];
 
         // i 是 pressure plate 所在 platform 的索引，x 和 z 是其相对 platform 的坐标
