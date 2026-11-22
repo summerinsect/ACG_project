@@ -113,6 +113,13 @@ class LevelManager {
         this.player.update(alpha);
         // this.doors.forEach(door => { door.update(alpha); })
     }
+
+    valid(pos) {
+        let valid = false;
+        this.platforms.forEach(platform => { valid |= platform.valid(pos); });
+        this.roads.forEach(road => { valid |= road.valid(pos); });
+        return valid;
+    }
 }
 
 export { LevelManager }; 

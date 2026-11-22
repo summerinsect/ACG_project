@@ -24,6 +24,25 @@ class Road{
         levelManager.levelRoot.add(this.mesh);
     }
 
+    valid(pos) {
+        const road = this.mesh.position;
+        const length = Layout.platformInterval - Layout.platformSize;
+        const rs = Layout.roadSize;
+        const pr = Layout.playerRadius;
+        if (this.direction == 'z') {
+            return (
+                pos.x >= road.x - rs / 2 + pr && pos.x <= road.x + rs / 2 - pr &&
+                pos.z >= road.z - length / 2 - 2 * pr && pos.z <= road.z + length / 2 + 2 * pr
+            );
+        }
+        else {
+            return (
+                pos.x >= road.x - length / 2 - 2 * pr && pos.x <= road.x + length / 2 + 2 * pr &&
+                pos.z >= road.z - rs / 2 + pr && pos.z <= road.z + rs / 2 - pr
+            );
+        }
+    }
+
     // loadTexture? 也许以后会有。
 }
 

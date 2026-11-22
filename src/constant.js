@@ -7,11 +7,12 @@ export const Layout = Object.freeze({
     platformThickness: 0.5,
     roadSize: 1,
     roadOffset: 0.8,
-    doorHeight: 2,
-    pressurePlateRadius: 0.5,
+    doorHeight: 1.2,
+    pressurePlateRadius: 0.4,
     pressurePlateThickness: 0.1,
     keyRadius: 0.2,
-    keyHeight: 1
+    keyHeight: 1,
+    playerRadius: 0.2,
 });
 
 export const MeshAttributes = Object.freeze({
