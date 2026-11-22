@@ -1,0 +1,77 @@
+import * as THREE from 'three';
+import { Layout } from './constant.js'
+
+const wrapAngle = a => a - 2 * Math.PI * Math.floor((a + Math.PI) / (2 * Math.PI));
+
+class Player {
+
+    constructor(levelManager) {
+        this.levelManager = levelManager;
+        this.game = this.levelManager.game;
+        this.load();
+        this.velocity = 10;
+        this.state = { x: 0, z: 0, facing: 0 }; // 逻辑状态
+        this.prevState = { x: 0, z: 0, facing: 0 };
+    }
+
+    load() {
+        // 先用一个简单的模型代替
+        this.root = new THREE.Group();
+        const headGeometry = new THREE.SphereGeometry(0.3, 32, 32);
+        const bodyGeometry = new THREE.CylinderGeometry(0.15, 0.45, 0.8, 32);
+        const noseGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+        const headMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const noseMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const head = new THREE.Mesh(headGeometry, headMaterial);
+        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        const nose = new THREE.Mesh(noseGeometry, noseMaterial);
+        this.root.position.y = Layout.platformThickness / 2;
+        head.position.set(0, 0.9, 0);
+        body.position.set(0, 0.4, 0);
+        nose.position.set(0, 0.95, 0.3);
+        this.root.add(head);
+        this.root.add(body);
+        this.root.add(nose);
+        this.levelManager.levelRoot.add(this.root);
+    }
+
+    get target() {
+        let target = new THREE.Vector3(this.root.position.x, 2, this.root.position.z);
+        return target;
+    }
+
+    tick() {
+        this.prevState = this.state;
+        const f = (this.game.inputHandler.isHeld('KeyW') ? 1 : 0) - (this.game.inputHandler.isHeld('KeyS') ? 1 : 0);
+        const r = (this.game.inputHandler.isHeld('KeyD') ? 1 : 0) - (this.game.inputHandler.isHeld('KeyA') ? 1 : 0);
+        if (f == 0 && r == 0) return;
+
+        const cameraYaw = this.game.followCamera.yaw;
+        const fx = -Math.sin(cameraYaw), fz = -Math.cos(cameraYaw);
+        const rx = Math.cos(cameraYaw), rz = -Math.sin(cameraYaw);
+        let mx = fx * f + rx * r, mz = fz * f + rz * r;
+        const len = Math.hypot(mx, mz);
+        mx /= len; mz /= len;
+
+        // TODO: 将角色限制在可行动区域内
+
+        this.state.x += mx * this.velocity * this.game.TICK;
+        this.state.z += mz * this.velocity * this.game.TICK;
+
+        const targetFacing = Math.atan2(mx, mz);
+        const diff = wrapAngle(targetFacing - this.state.facing);
+        this.state.facing = wrapAngle(this.state.facing + Math.sign(diff) * Math.min(Math.abs(diff), 0.1));
+    }
+
+    update(alpha) {
+        const x = this.prevState.x * (1 - alpha) + this.state.x * alpha;
+        const z = this.prevState.z * (1 - alpha) + this.state.z * alpha;
+        const facing = this.prevState.facing * (1 - alpha) + this.state.facing * alpha;
+        this.root.position.x = x;
+        this.root.position.z = z;
+        this.root.rotation.y = wrapAngle(facing);
+    }
+}
+
+export { Player };

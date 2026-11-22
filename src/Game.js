@@ -1,15 +1,16 @@
 // import './style.css'
 import * as THREE from 'three'
 import { LevelManager } from './LevelManager.js'
+import { FollowCamera } from './FollowCamera.js'
+import { InputHandler } from './InputHandler.js'
 
 class Game {
     constructor() {
         const container = document.createElement('div');
         document.body.appendChild(container);
 
-        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-        this.camera.position.set(0, 5, 10);
-        this.camera.lookAt(0, 0, -10); 
+        this.followCamera = new FollowCamera();
+        this.camera = this.followCamera.camera;
 
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0xaaaaaa);
@@ -30,19 +31,41 @@ class Game {
 
         window.addEventListener('resize', this.resize.bind(this));
 
-        this.levelManager = new LevelManager(this);
-
         // 原型阶段默认加载一个固定场景
+        this.levelManager = new LevelManager(this);
         this.levelManager.initLevel();
+
+        this.inputHandler = new InputHandler(this.renderer.domElement);
+
+        this.TICK = 1 / 60;
+        this.lastTime = null;
+        this.accumulation = 0;
+        this.tickCount = 0;
     }
 
     resize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
+        this.followCamera.resize();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     render(time) {
+        if (this.lastTime == null) this.lastTime = time;
+        const frameDt = Math.min((time - this.lastTime) / 1000, 0.25);
+        this.lastTime = time;
+
+        this.accumulation += frameDt;
+        while (this.accumulation >= this.TICK) {
+            this.accumulation -= this.TICK;
+            this.levelManager.tick();
+            this.tickCount++;
+        }
+
+        const alpha = this.accumulation / this.TICK;
+        this.levelManager.update(alpha);
+
+        const mouse = this.inputHandler.takeMouseDelta();
+        const target = this.levelManager.player.target;
+        this.followCamera.update(frameDt, mouse, target);
 
         this.renderer.render(this.scene, this.camera);
     }

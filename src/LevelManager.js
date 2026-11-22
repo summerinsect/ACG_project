@@ -4,6 +4,7 @@ import { Road } from './Road.js'
 import { Door } from './Door.js'
 import { PressurePlate } from './PressurePlate.js'
 import { Key } from './Key.js'
+import { Player } from './Player.js'
 
 class LevelManager {
     constructor(game/*, levelId*/) {
@@ -69,21 +70,10 @@ class LevelManager {
 
     initLevel() {
         this.loadLevelData();
-        this.initPlatforms();
-        this.initRoads();
-        this.initDoors();
-        this.initPressurePlates();
-        this.initKeys();
-    }
-
-    initPlatforms() {
         this.platformInfo.forEach((info, index) => {
             const platform = new Platform(this, index);
             this.platforms.push(platform);
         });
-    }
-
-    initRoads() {
         this.roadInfo.forEach((info, index) => {
             if (info.c == 1) {
                 const road = new Road(this, index, 0);
@@ -98,27 +88,30 @@ class LevelManager {
                 console.error(`Road ${index} has invalid c value: ${info.c}`);
             }
         });
-    }
-
-    initDoors() {
         this.doorInfo.forEach((info, index) => {
             const door = new Door(this, index);
             this.doors.push(door);
         })
-    }
-
-    initPressurePlates() {
         this.pressurePlateInfo.forEach((info, index) => {
             const pressurePlate = new PressurePlate(this, index);
             this.pressurePlates.push(pressurePlate);
         })
-    }
-
-    initKeys() {
         this.keyInfo.forEach((info, index) => {
             const key = new Key(this, index);
             this.keys.push(key);
         })
+        // init player
+        this.player = new Player(this);
+    }
+
+    tick() {
+        this.player.tick();
+        // this.doors.forEach(door => { door.tick(); })
+    }
+
+    update(alpha) {
+        this.player.update(alpha);
+        // this.doors.forEach(door => { door.update(alpha); })
     }
 }
 
