@@ -43,7 +43,7 @@ class LevelManager {
         // p = -1 表示这扇门需要用钥匙打开，其他情况 p 是非负整数
         this.doorInfo = [
             { i: 0, d: -1, p: -1 },
-            { i: 5, d: 0, p: 0 },
+            { i: 5, d: 0.2, p: 0 },
             { i: 3, d: 1, p: 1 },
         ];
 
@@ -106,12 +106,12 @@ class LevelManager {
 
     tick() {
         this.player.tick();
-        // this.doors.forEach(door => { door.tick(); })
+        this.doors.forEach(door => { door.tick(); })
     }
 
     update(alpha) {
         this.player.update(alpha);
-        // this.doors.forEach(door => { door.update(alpha); })
+        this.doors.forEach(door => { door.update(alpha); })
     }
 
     valid(pos) {
@@ -119,6 +119,10 @@ class LevelManager {
         this.platforms.forEach(platform => { valid |= platform.valid(pos); });
         this.roads.forEach(road => { valid |= road.valid(pos); });
         return valid;
+    }
+
+    doorCheck(player) {
+        this.doors.forEach(door => {door.doorCheck(player);});
     }
 }
 

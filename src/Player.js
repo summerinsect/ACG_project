@@ -41,21 +41,7 @@ class Player {
         return target;
     }
 
-    tick() {
-        this.prevState = { ...this.state };
-        const f = (this.game.inputHandler.isHeld('KeyW') ? 1 : 0) - (this.game.inputHandler.isHeld('KeyS') ? 1 : 0);
-        const r = (this.game.inputHandler.isHeld('KeyD') ? 1 : 0) - (this.game.inputHandler.isHeld('KeyA') ? 1 : 0);
-        if (f == 0 && r == 0) return;
-
-        const cameraYaw = this.game.followCamera.yaw;
-        const fx = -Math.sin(cameraYaw), fz = -Math.cos(cameraYaw);
-        const rx = Math.cos(cameraYaw), rz = -Math.sin(cameraYaw);
-        let mx = fx * f + rx * r, mz = fz * f + rz * r;
-        const len = Math.hypot(mx, mz);
-        mx /= len; mz /= len;
-
-        const newX = this.state.x + mx * this.velocity * this.game.TICK;
-        const newZ = this.state.z + mz * this.velocity * this.game.TICK;
+    move(newX, newZ) {
         const pos1 = new THREE.Vector3(newX, 0, newZ);
         const pos2 = new THREE.Vector3(newX, 0, this.state.z);
         const pos3 = new THREE.Vector3(this.state.x, 0, newZ);
@@ -70,10 +56,33 @@ class Player {
         else if (this.levelManager.valid(pos3)) {
             this.state.z = newZ;
         }
+    }
 
-        const targetFacing = Math.atan2(mx, mz);
-        const diff = wrapAngle(targetFacing - this.state.facing);
-        this.state.facing = wrapAngle(this.state.facing + Math.sign(diff) * Math.min(Math.abs(diff), 0.1));
+    tick() {
+        this.prevState = { ...this.state };
+        const f = (this.game.inputHandler.isHeld('KeyW') ? 1 : 0) - (this.game.inputHandler.isHeld('KeyS') ? 1 : 0);
+        const r = (this.game.inputHandler.isHeld('KeyD') ? 1 : 0) - (this.game.inputHandler.isHeld('KeyA') ? 1 : 0);
+
+        const cameraYaw = this.game.followCamera.yaw;
+        const fx = -Math.sin(cameraYaw), fz = -Math.cos(cameraYaw);
+        const rx = Math.cos(cameraYaw), rz = -Math.sin(cameraYaw);
+        let mx = fx * f + rx * r, mz = fz * f + rz * r;
+        if (f != 0 || r != 0) {
+            const len = Math.hypot(mx, mz);
+            mx /= len; mz /= len;
+        }
+
+        const newX = this.state.x + mx * this.velocity * this.game.TICK;
+        const newZ = this.state.z + mz * this.velocity * this.game.TICK;
+        this.move(newX, newZ);
+
+        this.levelManager.doorCheck(this);
+
+        if (f != 0 || r != 0) {
+            const targetFacing = Math.atan2(mx, mz);
+            const diff = wrapAngle(targetFacing - this.state.facing);
+            this.state.facing = wrapAngle(this.state.facing + Math.sign(diff) * Math.min(Math.abs(diff), 0.1));
+        }
     }
 
     update(alpha) {
