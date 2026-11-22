@@ -38,7 +38,7 @@ class Game {
         this.accumulation = 0;
         this.tickCount = 0;
 
-        this.levelManager = new LevelManager(this, 1);
+        this.levelManager = new LevelManager(this, 2);
         this.levelManager.initLevel();
     }
 

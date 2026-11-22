@@ -64,15 +64,15 @@ class LevelManager {
         this.doorInfo.forEach((info, index) => {
             const door = new Door(this, index);
             this.doors.push(door);
-        })
+        });
         this.pressurePlateInfo.forEach((info, index) => {
             const pressurePlate = new PressurePlate(this, index);
             this.pressurePlates.push(pressurePlate);
-        })
+        });
         this.keyInfo.forEach((info, index) => {
             const key = new Key(this, index);
             this.keys.push(key);
-        })
+        });
     }
 
     tick() {

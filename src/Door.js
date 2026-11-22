@@ -53,7 +53,7 @@ class Door{
 			}
 		} // 创建门板
 		this.opening = false;
-		this.rotateSpeed = Math.PI / 6;
+		this.rotateSpeed = Math.PI;
 		this.prevAngle = 0;
 		this.currentAngle = 0;
 		// 路的方向是 z，门垂直于路，门的方向就是 x
@@ -82,7 +82,6 @@ class Door{
 			this.currentAngle = 0;
 		}
 		this.doorCheck(this.game.levelManager.player);
-
 	}
 
 	update(alpha) {
