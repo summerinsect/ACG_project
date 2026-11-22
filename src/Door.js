@@ -63,6 +63,8 @@ class Door{
 			const roadPos = road.mesh.position, doorPos = this.leftDoorRoot.position;
             this.angleSign = (ox * (roadPos.x - doorPos.x) + oz * (roadPos.z - doorPos.z) > 0 ? 1 : -1);
 		}
+
+		this.pressurePlateIndex = info.p;
 	}
 
 	tick() {

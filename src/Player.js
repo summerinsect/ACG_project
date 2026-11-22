@@ -10,8 +10,12 @@ class Player {
         this.game = this.levelManager.game;
         this.load();
         this.velocity = 3;
-        this.state = { x: 0, z: 0, facing: 0 }; // 逻辑状态
+        // 区分逻辑状态和渲染状态
+        this.state = { x: 0, z: 0, facing: 0 }; 
         this.prevState = { x: 0, z: 0, facing: 0 };
+
+        this.state.x = this.levelManager.startPoint.x + this.levelManager.platforms[this.levelManager.startPoint.i].mesh.position.x;
+        this.state.z = this.levelManager.startPoint.z + this.levelManager.platforms[this.levelManager.startPoint.i].mesh.position.z;
     }
 
     load() {

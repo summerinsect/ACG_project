@@ -31,16 +31,15 @@ class Game {
 
         window.addEventListener('resize', this.resize.bind(this));
 
-        // 原型阶段默认加载一个固定场景
-        this.levelManager = new LevelManager(this);
-        this.levelManager.initLevel();
-
         this.inputHandler = new InputHandler(this.renderer.domElement);
 
         this.TICK = 1 / 60;
         this.lastTime = null;
         this.accumulation = 0;
         this.tickCount = 0;
+
+        this.levelManager = new LevelManager(this, 1);
+        this.levelManager.initLevel();
     }
 
     resize() {
