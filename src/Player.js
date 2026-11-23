@@ -87,7 +87,7 @@ class Player {
         const newZ = this.state.z + mz * this.velocity * this.game.TICK;
         this.move(newX, newZ);
 
-        this.levelManager.doorCheck(this);
+        this.levelManager.doorPlayerCollision(this);
 
         if (f != 0 || r != 0) {
             const targetFacing = Math.atan2(mx, mz);

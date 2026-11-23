@@ -87,7 +87,7 @@ class Door{
 		if (this.currentAngle <= 0) {
 			this.currentAngle = 0;
 		}
-		this.doorCheck(this.game.levelManager.player);
+		this.doorPlayerCollision(this.game.levelManager.player);
 	}
 
 	update(alpha) {
@@ -99,7 +99,7 @@ class Door{
 	get leftAngle() { return this.currentAngle * this.angleSign; }
     get rightAngle() { return this.currentAngle * -this.angleSign; }
 
-	doorCheck(player) {
+	doorPlayerCollision(player) {
 		function distToSegment(p, a, b) { // p, a, b: Vector3
             const px = p.x, pz = p.z, ax = a.x, az = a.z, bx = b.x, bz = b.z;
 			const abx = bx - ax, abz = bz - az;

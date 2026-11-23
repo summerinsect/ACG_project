@@ -167,8 +167,8 @@ class LevelManager {
         return valid;
     }
 
-    doorCheck(player) {
-        this.doors.forEach(door => {door.doorCheck(player);});
+    doorPlayerCollision(player) {
+        this.doors.forEach(door => { door.doorPlayerCollision(player);});
     }
 
     doorOpen(index, state) {

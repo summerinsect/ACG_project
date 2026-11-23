@@ -57,6 +57,7 @@ class Agent {
             this.state = this.states[this.tickCount];
             ++this.tickCount;
         }
+        this.agentPlayerCollision(this.levelManager.player);
     }
 
     update(alpha) {
@@ -90,6 +91,19 @@ class Agent {
         this.endRound();
         this.tickCount = 0;
         this.states = [];
+    }
+
+    agentPlayerCollision(player) {
+        const agentPos = new THREE.Vector3(this.state.x, 0, this.state.z);
+        const playerPos = new THREE.Vector3(player.state.x, 0, player.state.z);
+        const dist = Math.hypot(agentPos.x - playerPos.x, agentPos.z - playerPos.z);
+        if (dist < Layout.agentRadius + Layout.playerRadius) {
+            const dir = playerPos.clone().sub(agentPos).normalize();
+            const overlap = Layout.agentRadius + Layout.playerRadius - dist;
+            const newX = player.state.x + dir.x * overlap;
+            const newZ = player.state.z + dir.z * overlap;
+            player.move(newX, newZ);
+        }
     }
 }
 

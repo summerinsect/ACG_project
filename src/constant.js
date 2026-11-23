@@ -14,6 +14,7 @@ export const Layout = Object.freeze({
     keyRadius: 0.2,
     keyHeight: 1,
     playerRadius: 0.2,
+    agentRadius: 0.2,
 });
 
 export const MeshAttributes = Object.freeze({
