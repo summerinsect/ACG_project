@@ -45,7 +45,9 @@ class Agent {
         this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;
         this.state.facing = startPoint.facing;
         this.prevState = { ...this.state };
-        this.update(0);
+        this.valid = true;
+        this.update(0); // 临时设置为 true 做 update
+        this.valid = false;
     }
 
     tick() {
@@ -81,6 +83,13 @@ class Agent {
     endRound() {
         this.valid = false;
         this.root.visible = false;
+    }
+
+    reset() {
+        this.setToStartPoint();
+        this.endRound();
+        this.tickCount = 0;
+        this.states = [];
     }
 }
 

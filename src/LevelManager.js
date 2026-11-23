@@ -37,6 +37,7 @@ class LevelManager {
         this.levelData = getLevelData(levelId);
         this.levelName = this.levelData.levelName;
         this.maxAgent = this.levelData.maxAgent;
+        this.maxRoundTime = this.levelData.maxRoundTime;
         this.platformInfo = this.levelData.platformInfo;
         this.roadInfo = this.levelData.roadInfo;
         this.doorInfo = this.levelData.doorInfo;
@@ -90,15 +91,21 @@ class LevelManager {
         this.player.setToStartPoint();
         this.doors.forEach(door => { door.reset(); });
         this.pressurePlates.forEach(pressurePlate => { pressurePlate.reset(); });
-        this.agents.forEach(agent => { agent.setToStartPoint(); agent.endRound(); }));
+        this.agents.forEach(agent => { agent.reset(); });
         this.recording = false;
-        this.recordingStates = [];
+        this.recordStates = [];
         this.round = 0;
     }
 
     tick() {
         if (this.recording) {
             this.tickCount++;
+            const remainingTime = this.maxRoundTime * 60 - this.tickCount;
+            this.game.UI.setHudText(`${Math.floor(remainingTime / 60)}:${Math.floor(remainingTime % 60 / 60 * 100)}`);
+            if (this.tickCount > this.maxRoundTime * 60) {
+                this.endRound();
+                return;
+            }
             this.player.tick();
             this.doors.forEach(door => { door.tick(); });
             this.agents.forEach(agent => { agent.tick(); });
