@@ -9,10 +9,11 @@ export const Layout = Object.freeze({
     roadOffset: 0.8,
     doorHeight: 1.2,
     doorThickness: 0.05,
+    doorOpenDist: 0.5,
     pressurePlateRadius: 0.4,
     pressurePlateThickness: 0.1,
-    keyRadius: 0.2,
-    keyHeight: 1,
+    keyHeight: 0.2,
+    keyPickDist: 0.5,
     playerRadius: 0.2,
     agentRadius: 0.2,
 });
@@ -28,6 +29,4 @@ export const MeshAttributes = Object.freeze({
     doorMaterial: new THREE.MeshStandardMaterial({ color: 0x0000ff }),
     pressurePlateGeometry: new THREE.CylinderGeometry(Layout.pressurePlateRadius, Layout.pressurePlateRadius, Layout.pressurePlateThickness),
     pressurePlateMaterial: new THREE.MeshStandardMaterial({ color: 0xffff00 }),
-    keyGeometry: new THREE.SphereGeometry(Layout.keyRadius, 32, 32),
-    keyMaterial: new THREE.MeshStandardMaterial({ color: 0xff00ff }),
 })

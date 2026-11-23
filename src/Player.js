@@ -14,6 +14,7 @@ class Player {
         this.state = { x: 0, z: 0, facing: 0 }; 
         this.prevState = { x: 0, z: 0, facing: 0 };
         this.setToStartPoint();
+        this.keyCount = 0;
     }
 
     load() {
@@ -32,9 +33,7 @@ class Player {
         head.position.set(0, 0.67, 0);
         body.position.set(0, 0.3, 0);
         nose.position.set(0, 0.67, 0.17);
-        this.root.add(head);
-        this.root.add(body);
-        this.root.add(nose);
+        this.root.add(head, body, nose);
         this.levelManager.levelRoot.add(this.root);
     }
 
@@ -67,6 +66,11 @@ class Player {
         this.state.facing = startPoint.facing;
         this.prevState = { ...this.state };
         this.update(0);
+    }
+
+    reset() {
+        this.setToStartPoint();
+        this.keyCount = 0;
     }
 
     tick() {

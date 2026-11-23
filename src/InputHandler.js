@@ -45,10 +45,16 @@ class InputHandler {
             this.game.setState('lose'); // 直接失败，仅供测试
         }
         if (this.consume('KeyR')) {
-            this.game.levelManager.startRound();
+            if (this.game.state === 'playing')
+                this.game.levelManager.startRound();
         }
         if (this.consume('KeyE')) {
-            this.game.levelManager.endRound();
+            if (this.game.state === 'playing')
+                this.game.levelManager.endRound();
+        }
+        if (this.consume('KeyF')) {
+            if (this.game.state === 'playing')
+                this.game.levelManager.interactWithDoorAndKey();
         }
     }
 

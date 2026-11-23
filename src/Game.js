@@ -49,7 +49,7 @@ class Game {
         });
         this.state = 'menu';
         this.UI.show(this.state);
-        this.levelManager = new LevelManager(this, 2);
+        this.levelManager = new LevelManager(this, 3);
         this.levelManager.initLevel();
     }
 

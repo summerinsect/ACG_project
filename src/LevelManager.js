@@ -88,10 +88,11 @@ class LevelManager {
     }
 
     resetLevel() {
-        this.player.setToStartPoint();
+        this.player.reset();
         this.doors.forEach(door => { door.reset(); });
         this.pressurePlates.forEach(pressurePlate => { pressurePlate.reset(); });
         this.agents.forEach(agent => { agent.reset(); });
+        this.keys.forEach(key => { key.resetLevel(); });
         this.recording = false;
         this.recordStates = [];
         this.round = 0;
@@ -110,6 +111,7 @@ class LevelManager {
             this.doors.forEach(door => { door.tick(); });
             this.agents.forEach(agent => { agent.tick(); });
             this.pressurePlates.forEach(pressurePlate => { pressurePlate.tick(); });
+            this.keys.forEach(key => { key.tick(); });
             this.recordStates.push({ ...this.player.state });
             this.winCheck();
         }
@@ -119,6 +121,7 @@ class LevelManager {
         this.player.update(alpha);
         this.doors.forEach(door => { door.update(alpha); });
         this.agents.forEach(agent => { agent.update(alpha); });
+        this.keys.forEach(key => { key.update(alpha); });
     }
 
     startRound() {
@@ -145,9 +148,10 @@ class LevelManager {
         this.agents[this.round].setStates(this.recordStates);
         this.recordStates = [];
         this.round++;
-        this.player.setToStartPoint();
+        this.player.reset();
         this.doors.forEach(door => { door.reset(); });
         this.pressurePlates.forEach(pressurePlate => { pressurePlate.reset(); });
+        this.keys.forEach(key => { key.reset(); });
     }
 
     winCheck() {
@@ -177,6 +181,11 @@ class LevelManager {
                 door.opening = state;
             }
         });
+    }
+
+    interactWithDoorAndKey() {
+        this.doors.forEach(door => { door.openWithKeyByPlayer(); });
+        this.keys.forEach(key => { key.pickUpByPlayer(); });
     }
 }
 

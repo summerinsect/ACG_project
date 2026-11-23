@@ -1,6 +1,6 @@
 export default {
     levelName: "测试关卡 3",
-    maxAgent: 1,
+    maxAgent: 2,
     maxRoundTime: 30,
     // 坐标 (x, z) 必须是 5 的整数倍
     platformInfo: [
@@ -17,6 +17,7 @@ export default {
     // i 是 door 所在 road 的索引（注意索引展开），d 是 door 在 road 的位置 [-1, 1]，
     // p 是开门需要的 pressure plate，p = -1 表示这扇门需要用钥匙打开，其他情况 p 是非负整数
     doorInfo: [
+        { i: 0, d: 0, p: -1 },
         { i: 1, d: 0, p: 0 },
     ],
     // i 是 pressure plate 所在 platform 的索引，x 和 z 是其相对 platform 的坐标
@@ -29,6 +30,6 @@ export default {
         { i: 2, x: 0, z: 0 },
     ],
     // i 是出生点/终点所在 platform 的索引，x 和 z 是其相对 platform 的坐标
-    startPoint: { i: 0, x: 0, z: 1 },
-    endPoint: { i: 1, x: 0, z: 0 },
+    startPoint: { i: 0, x: 0, z: 1, facing: Math.PI },
+    endPoint: { i: 1, x: 0, z: 0, facing: Math.PI / 2 },
 };

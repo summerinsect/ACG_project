@@ -12,6 +12,8 @@ class Agent {
         this.states = [];
         this.state = { x: 0, z: 0, facing: 0 };
         this.prevState = { x: 0, z: 0, facing: 0 };
+        this.pickUpKey = [];
+        this.openDoor = [];
         this.valid = false;
     }
 
@@ -32,9 +34,7 @@ class Agent {
         body.position.set(0, 0.2, 0);
         nose.position.set(0, 0.5, 0.1);
         nose.rotation.set(Math.PI / 2, 0, 0);
-        this.root.add(head);
-        this.root.add(body);
-        this.root.add(nose);
+        this.root.add(head, body, nose);
         this.levelManager.levelRoot.add(this.root);
         this.root.visible = false;
     }
@@ -55,6 +55,16 @@ class Agent {
         this.prevState = { ... this.state };
         if (this.tickCount < this.states.length - 1) {
             this.state = this.states[this.tickCount];
+            this.pickUpKey.forEach(info => {
+                if (info.tick == this.tickCount) {
+                    this.levelManager.keys[info.index].pickUpByAgent();
+                }
+            });
+            this.openDoor.forEach(info => {
+                if (info.tick == this.tickCount) {
+                    this.levelManager.doors[info.index].openWithKeyByAgent();
+                }
+            });
             ++this.tickCount;
         }
         this.agentPlayerCollision(this.levelManager.player);
@@ -91,6 +101,8 @@ class Agent {
         this.endRound();
         this.tickCount = 0;
         this.states = [];
+        this.pickUpKey = [];
+        this.openDoor = [];
     }
 
     agentPlayerCollision(player) {

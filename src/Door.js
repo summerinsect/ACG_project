@@ -1,9 +1,23 @@
 import * as THREE from 'three';
 import { Layout, MeshAttributes } from './constant.js'
 
+function distToSegment(p, a, b) { // p, a, b: Vector3
+	const px = p.x, pz = p.z, ax = a.x, az = a.z, bx = b.x, bz = b.z;
+	const abx = bx - ax, abz = bz - az;
+	const s = Math.max(0, Math.min(1, ((px - ax) * abx + (pz - az) * abz) / (abx * abx + abz * abz)));
+	const qx = ax + s * abx, qz = az + s * abz;   // 线段上离 P 最近的点
+	return {
+		dist: Math.hypot(px - qx, pz - qz),
+		point: new THREE.Vector3(qx, 0, qz)
+	};
+}
+
 class Door{
 	constructor(levelManager, index) {
 		this.game = levelManager.game;
+		this.levelManager = levelManager;
+		this.player = levelManager.player;
+		this.index = index;
 		const info = levelManager.doorInfo[index];
 		const road = levelManager.roads[info.i];
 		{
@@ -65,6 +79,7 @@ class Door{
 		}
 
 		this.pressurePlateIndex = info.p;
+		this.openByKey = (info.p == -1);
 	}
 
 	reset() {
@@ -97,48 +112,70 @@ class Door{
 	}
 
 	get leftAngle() { return this.currentAngle * this.angleSign; }
-    get rightAngle() { return this.currentAngle * -this.angleSign; }
+	get rightAngle() { return this.currentAngle * -this.angleSign; }
 
-	doorPlayerCollision(player) {
-		function distToSegment(p, a, b) { // p, a, b: Vector3
-            const px = p.x, pz = p.z, ax = a.x, az = a.z, bx = b.x, bz = b.z;
-			const abx = bx - ax, abz = bz - az;
-			const s = Math.max(0, Math.min(1, ((px - ax) * abx + (pz - az) * abz) / (abx * abx + abz * abz)));
-			const qx = ax + s * abx, qz = az + s * abz;   // 线段上离 P 最近的点
-			return {
-				dist: Math.hypot(px - qx, pz - qz),
-				point: new THREE.Vector3(qx, 0, qz)
-			};
-		}
-
-		const thickness = Layout.doorThickness;
+	distToLeftDoor(pos) {
 		const width = Layout.roadSize / 2;
 		const leftRotDirVec = this.dirVec.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), this.leftAngle);
-        const rightRotDirVec = this.dirVec.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), this.rightAngle);
-		const la = new THREE.Vector3(), ra = new THREE.Vector3();
-		this.leftDoorRoot.getWorldPosition(la); // 门轴静止所以直接取世界坐标
-        const lb = new THREE.Vector3(la.x + width * leftRotDirVec.x, la.y, la.z + width * leftRotDirVec.z);
-		this.rightDoorRoot.getWorldPosition(ra);
+		const la = new THREE.Vector3();
+		this.leftDoorRoot.getWorldPosition(la); // 门轴静止可以直接取世界坐标
+		const lb = new THREE.Vector3(la.x + width * leftRotDirVec.x, la.y, la.z + width * leftRotDirVec.z);
+		return distToSegment(pos, la, lb);
+	}
+
+	distToRightDoor(pos) {
+		const width = Layout.roadSize / 2;
+		const rightRotDirVec = this.dirVec.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), this.rightAngle);
+		const ra = new THREE.Vector3();
+		this.rightDoorRoot.getWorldPosition(ra);// 门轴静止可以直接取世界坐标
 		const rb = new THREE.Vector3(ra.x - width * rightRotDirVec.x, ra.y, ra.z - width * rightRotDirVec.z);
+		return distToSegment(pos, ra, rb);
+	}
+
+	openWithKeyByPlayer() {
+		if (this.opening) return;
+		if (!this.openByKey) return;
+		if (this.player.keyCount <= 0) return;
+		const dist = Math.min(
+			this.distToLeftDoor(new THREE.Vector3(this.player.state.x, 0, this.player.state.z)).dist,
+			this.distToRightDoor(new THREE.Vector3(this.player.state.x, 0, this.player.state.z)).dist
+		);
+        if (dist > Layout.doorOpenDist) return;
+		this.player.keyCount--;
+		this.opening = true;
+		if (this.levelManager.round < this.levelManager.maxAgent) {
+			this.levelManager.agents[this.levelManager.round].openDoor.push({
+				tick: this.levelManager.tickCount,
+				index: this.index,
+			});
+		}
+	}
+
+	openWithKeyByAgent() {
+		this.opening = true;
+	}
+
+	doorPlayerCollision() {
+		const thickness = Layout.doorThickness;
 		const pr = Layout.playerRadius;
-		let ppos = new THREE.Vector3(player.state.x, 0, player.state.z);
+		let ppos = new THREE.Vector3(this.player.state.x, 0, this.player.state.z);
         let newX = ppos.x, newZ = ppos.z;
-		const distToLeftDoor = distToSegment(ppos, la, lb);
-		if (distToLeftDoor.dist + 1e-6 <= thickness / 2 + pr) {
-			const overlap = thickness / 2 + pr - distToLeftDoor.dist;
-			const dx = ppos.x - distToLeftDoor.point.x, dz = ppos.z - distToLeftDoor.point.z;
-			newX += dx / distToLeftDoor.dist * overlap;
-			newZ += dz / distToLeftDoor.dist * overlap;
+		const distToLeft = this.distToLeftDoor(ppos);
+		if (distToLeft.dist + 1e-6 <= thickness / 2 + pr) {
+			const overlap = thickness / 2 + pr - distToLeft.dist;
+			const dx = ppos.x - distToLeft.point.x, dz = ppos.z - distToLeft.point.z;
+			newX += dx / distToLeft.dist * overlap;
+			newZ += dz / distToLeft.dist * overlap;
 		}
 		ppos = new THREE.Vector3(newX, 0, newZ);
-		const distToRightDoor = distToSegment(ppos, ra, rb);
-		if (distToRightDoor.dist + 1e-6 <= thickness / 2 + pr) {
-			const overlap = thickness / 2 + pr - distToRightDoor.dist;
-			const dx = ppos.x - distToRightDoor.point.x , dz = ppos.z - distToRightDoor.point.z;
-			newX += dx / distToRightDoor.dist * overlap;
-			newZ += dz / distToRightDoor.dist * overlap;
+		const distToRight = this.distToRightDoor(ppos);
+		if (distToRight.dist + 1e-6 <= thickness / 2 + pr) {
+			const overlap = thickness / 2 + pr - distToRight.dist;
+			const dx = ppos.x - distToRight.point.x, dz = ppos.z - distToRight.point.z;
+			newX += dx / distToRight.dist * overlap;
+			newZ += dz / distToRight.dist * overlap;
 		}
-		player.move(newX, newZ);
+		this.player.move(newX, newZ);
 	}
 }
 
