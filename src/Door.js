@@ -67,6 +67,12 @@ class Door{
 		this.pressurePlateIndex = info.p;
 	}
 
+	reset() {
+		this.prevAngle = this.currentAngle = 0;
+		this.opening = false;
+		this.update(0);
+	}
+
 	tick() {
 		this.prevAngle = this.currentAngle;
 		if (this.opening) {

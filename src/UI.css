@@ -1,0 +1,68 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+/* 所有界面层都是盖在画布上方的普通 DOM 元素 */
+.overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgba(20, 30, 45, 0.55);
+    color: #fff;
+}
+
+    .overlay h1 {
+        margin: 0 0 12px;
+        font-size: 48px;
+        letter-spacing: 4px;
+    }
+
+    .overlay h2 {
+        margin: 0 0 8px;
+        font-size: 36px;
+    }
+
+    .overlay p {
+        margin: 0;
+        opacity: 0.8;
+    }
+
+    .overlay button {
+        min-width: 200px;
+        padding: 12px 24px;
+        font-size: 20px;
+        color: #234;
+        background: #f2f5f8;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.1s, background 0.1s;
+    }
+
+        .overlay button:hover {
+            background: #fff;
+            transform: scale(1.05);
+        }
+
+.hud {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre;
+    pointer-events: none; /* 不拦截鼠标，否则会挡住画布 */
+}
+
+.hidden {
+    display: none !important;
+}

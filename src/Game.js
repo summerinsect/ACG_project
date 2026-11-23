@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { LevelManager } from './LevelManager.js'
 import { FollowCamera } from './FollowCamera.js'
 import { InputHandler } from './InputHandler.js'
+import { UI } from './UI.js'
 
 class Game {
     constructor() {
@@ -25,21 +26,51 @@ class Game {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(this.renderer.domElement);
+        this.canvas = this.renderer.domElement;
+        container.appendChild(this.canvas);
 
         this.renderer.setAnimationLoop(this.render.bind(this));
 
         window.addEventListener('resize', this.resize.bind(this));
 
-        this.inputHandler = new InputHandler(this.renderer.domElement);
+        this.inputHandler = new InputHandler(this);
 
         this.TICK = 1 / 60;
         this.lastTime = null;
-        this.accumulation = 0;
+        this.accumulator = 0;
         this.tickCount = 0;
 
+        this.levelManager = null;
+
+        this.UI = new UI({
+            start: () => this.setState('playing'),
+            resume: () => this.setState('playing'),
+            quit: () => this.setState('menu'),
+        });
+        this.state = 'menu';
+        this.UI.show(this.state);
         this.levelManager = new LevelManager(this, 2);
         this.levelManager.initLevel();
+    }
+
+    reset() {
+        this.levelManager.reset();
+    }
+
+    // 界面状态机
+    setState(next) {
+        this.state = next;
+        this.UI.show(next);
+
+        this.inputHandler.reset();
+        this.accumulator = 0;
+
+        if (next == 'menu') {
+            this.reset();
+        }
+        else if (document.pointerLockElement == this.canvas) {
+            document.exitPointerLock();
+        }
     }
 
     resize() {
@@ -52,19 +83,23 @@ class Game {
         const frameDt = Math.min((time - this.lastTime) / 1000, 0.25);
         this.lastTime = time;
 
-        this.accumulation += frameDt;
-        while (this.accumulation >= this.TICK) {
-            this.accumulation -= this.TICK;
-            this.levelManager.tick();
-            this.tickCount++;
+        this.inputHandler.consumeCode();
+
+        if (this.state == 'playing') {
+            this.accumulator += frameDt;
+            while (this.accumulator >= this.TICK) {
+                this.accumulator -= this.TICK;
+                    this.levelManager.tick();
+                this.tickCount++;
+            }
+
+            const alpha = this.accumulator / this.TICK;
+            this.levelManager.update(alpha);
+
+            const mouse = this.inputHandler.takeMouseDelta();
+            const target = this.levelManager.player.target;
+            this.followCamera.update(frameDt, mouse, target);
         }
-
-        const alpha = this.accumulation / this.TICK;
-        this.levelManager.update(alpha);
-
-        const mouse = this.inputHandler.takeMouseDelta();
-        const target = this.levelManager.player.target;
-        this.followCamera.update(frameDt, mouse, target);
 
         this.renderer.render(this.scene, this.camera);
     }

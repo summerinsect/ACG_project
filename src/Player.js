@@ -14,8 +14,9 @@ class Player {
         this.state = { x: 0, z: 0, facing: 0 }; 
         this.prevState = { x: 0, z: 0, facing: 0 };
 
-        this.state.x = this.levelManager.startPoint.x + this.levelManager.platforms[this.levelManager.startPoint.i].mesh.position.x;
-        this.state.z = this.levelManager.startPoint.z + this.levelManager.platforms[this.levelManager.startPoint.i].mesh.position.z;
+        const startPoint = this.levelManager.startPoint;
+        this.state.x = startPoint.x + this.levelManager.platformInfo[startPoint.i].x;
+        this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;
     }
 
     load() {
@@ -23,9 +24,9 @@ class Player {
         this.root = new THREE.Group();
         const headGeometry = new THREE.SphereGeometry(0.15, 32, 32);
         const bodyGeometry = new THREE.CylinderGeometry(0.1, 0.2, 0.6, 32);
-        const noseGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-        const headMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-        const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const noseGeometry = new THREE.BoxGeometry(0.05, 0.05, 0.05);
+        const headMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
         const noseMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         const head = new THREE.Mesh(headGeometry, headMaterial);
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
@@ -33,7 +34,7 @@ class Player {
         this.root.position.y = Layout.platformThickness / 2;
         head.position.set(0, 0.67, 0);
         body.position.set(0, 0.3, 0);
-        nose.position.set(0, 0.67, 0.18);
+        nose.position.set(0, 0.67, 0.17);
         this.root.add(head);
         this.root.add(body);
         this.root.add(nose);
@@ -60,6 +61,15 @@ class Player {
         else if (this.levelManager.valid(pos3)) {
             this.state.z = newZ;
         }
+    }
+
+    reset() {
+        const startPoint = this.levelManager.startPoint;
+        this.state.x = startPoint.x + this.levelManager.platformInfo[startPoint.i].x;
+        this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;
+        this.state.facing = 0;
+        this.prevState = { ...this.state };
+        this.update(0);
     }
 
     tick() {

@@ -40,7 +40,6 @@ class LevelManager {
     }
 
     initLevel() {
-        // init player
         this.loadLevelData(this.levelId);
         this.platformInfo.forEach((info, index) => {
             const platform = new Platform(this, index);
@@ -73,6 +72,11 @@ class LevelManager {
             const key = new Key(this, index);
             this.keys.push(key);
         });
+    }
+
+    reset() {
+        this.player.reset();
+        this.doors.forEach(door => { door.reset(); });
     }
 
     tick() {
