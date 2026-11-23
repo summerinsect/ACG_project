@@ -13,10 +13,7 @@ class Player {
         // 区分逻辑状态和渲染状态
         this.state = { x: 0, z: 0, facing: 0 }; 
         this.prevState = { x: 0, z: 0, facing: 0 };
-
-        const startPoint = this.levelManager.startPoint;
-        this.state.x = startPoint.x + this.levelManager.platformInfo[startPoint.i].x;
-        this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;
+        this.setToStartPoint();
     }
 
     load() {
@@ -63,7 +60,7 @@ class Player {
         }
     }
 
-    reset() {
+    setToStartPoint() {
         const startPoint = this.levelManager.startPoint;
         this.state.x = startPoint.x + this.levelManager.platformInfo[startPoint.i].x;
         this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;

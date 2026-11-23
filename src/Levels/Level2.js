@@ -1,6 +1,7 @@
 export default {
     name: "测试关卡 2",
-    maxAgents: 2,
+    maxAgent: 2,
+    maxRoundTime: 30,
     // 坐标 (x, z) 必须是 5 的整数倍
     platformInfo: [
         { x: 0, z: 0 },

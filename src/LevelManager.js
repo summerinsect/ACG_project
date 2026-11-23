@@ -5,6 +5,7 @@ import { Door } from './Door.js'
 import { PressurePlate } from './PressurePlate.js'
 import { Key } from './Key.js'
 import { Player } from './Player.js'
+import { Agent } from './Agent.js'
 
 const levelModules = import.meta.glob('./Levels/Level*.js', { eager: true, import: 'default' });
 function getLevelData(id) {
@@ -24,6 +25,11 @@ class LevelManager {
         this.doors = [];
         this.pressurePlates = [];
         this.keys = [];
+        this.agents = [];
+        this.recording = false;
+        this.recordStates = [];
+        this.round = 0;
+        this.tickCount = 0; // 本轮录制开始以来的时间
     }
 
     loadLevelData(levelId) {
@@ -72,22 +78,50 @@ class LevelManager {
             const key = new Key(this, index);
             this.keys.push(key);
         });
+        for (let i = 0; i < this.maxAgent; i++) {
+            const agent = new Agent(this);
+            this.agents.push(agent);
+        }
     }
 
     reset() {
-        this.player.reset();
+        this.player.setToStartPoint();
         this.doors.forEach(door => { door.reset(); });
     }
 
     tick() {
-        this.player.tick();
-        this.doors.forEach(door => { door.tick(); });
-        this.pressurePlates.forEach(pressurePlate => { pressurePlate.tick(); });
+        if (this.recording) {
+            this.tickCount++;
+            this.player.tick();
+            this.doors.forEach(door => { door.tick(); });
+            this.pressurePlates.forEach(pressurePlate => { pressurePlate.tick(); });
+            this.agents.forEach(agent => { agent.tick(); });
+            this.recordStates.push({ ...this.player.state });
+        }
     }
 
     update(alpha) {
         this.player.update(alpha);
         this.doors.forEach(door => { door.update(alpha); });
+        this.agents.forEach(agent => { agent.update(alpha); });
+    }
+
+    startRound() {
+        this.recording = true;
+        for (let i = 0; i < this.round; i++) {
+            this.agents[i].startRound();
+        }
+    }
+
+    endRound() {
+        for (let i = 0; i < this.round; i++) {
+            this.agents[i].endRound();
+        }
+        this.recording = false;
+        this.agents[this.round].setStates(this.recordStates);
+        this.recordStates = [];
+        this.round++;
+        this.reset();
     }
 
     valid(pos) {

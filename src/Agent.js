@@ -1,12 +1,18 @@
 import * as THREE from 'three';
+import { Layout } from './constant.js'
+
+const wrapAngle = a => a - 2 * Math.PI * Math.floor((a + Math.PI) / (2 * Math.PI));
 
 class Agent {
     constructor(levelManager) {
         this.levelManager = levelManager;
         this.game = this.levelManager.game;
         this.load();
-        this.tickCount = 0;
+        this.tickCount = 0; // agent 被创建以来的时间
         this.states = [];
+        this.state = {x: 0, z: 0, facing: 0};
+        this.state = { x: 0, z: 0, facing: 0 };
+        this.valid = false;
     }
 
     load() {
@@ -30,9 +36,50 @@ class Agent {
         this.root.add(body);
         this.root.add(nose);
         this.levelManager.levelRoot.add(this.root);
+        this.root.visible = false;
+    }
+
+    setToStartPoint() {
+        const startPoint = this.levelManager.startPoint;
+        this.state.x = startPoint.x + this.levelManager.platformInfo[startPoint.i].x;
+        this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;
+        this.state.facing = 0;
+        this.prevState = { ...this.state };
+        this.update(0);
     }
 
     tick() {
+        if (!this.valid) return;
+        this.prevState = { ... this.state };
+        if (this.tickCount < this.states.length - 1) {
+            this.state = this.states[++this.tickCount];
+        }
+    }
 
+    update(alpha) {
+        if (!this.valid) return;
+        const x = this.prevState.x * (1 - alpha) + this.state.x * alpha;
+        const z = this.prevState.z * (1 - alpha) + this.state.z * alpha;
+        const facing = this.prevState.facing + wrapAngle(this.state.facing - this.prevState.facing) * alpha;
+        this.root.position.x = x;
+        this.root.position.z = z;
+        this.root.rotation.y = wrapAngle(facing);
+    }
+
+    setStates(recordedStates) {
+        this.states = recordedStates;
+    }
+
+    startRound() {
+        this.tickCount = 0;
+        this.valid = true;
+        this.root.visible = true;
+    }
+
+    endRound() {
+        this.valid = false;
+        this.root.visible = false;
     }
 }
+
+export { Agent };
