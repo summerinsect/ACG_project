@@ -10,8 +10,8 @@ class Agent {
         this.load();
         this.tickCount = 0; // agent 被创建以来的时间
         this.states = [];
-        this.state = {x: 0, z: 0, facing: 0};
         this.state = { x: 0, z: 0, facing: 0 };
+        this.prevState = { x: 0, z: 0, facing: 0 };
         this.valid = false;
     }
 
@@ -43,7 +43,7 @@ class Agent {
         const startPoint = this.levelManager.startPoint;
         this.state.x = startPoint.x + this.levelManager.platformInfo[startPoint.i].x;
         this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;
-        this.state.facing = 0;
+        this.state.facing = startPoint.facing;
         this.prevState = { ...this.state };
         this.update(0);
     }
@@ -68,6 +68,7 @@ class Agent {
 
     setStates(recordedStates) {
         this.states = recordedStates;
+        console.log(`Agent has ${this.states.length} states`);
     }
 
     startRound() {
@@ -79,6 +80,10 @@ class Agent {
     endRound() {
         this.valid = false;
         this.root.visible = false;
+    }
+
+    reset() {
+        this.endRound();
     }
 }
 

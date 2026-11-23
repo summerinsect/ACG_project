@@ -12,17 +12,22 @@ class UI {
     constructor(actions) {
         this.screens = {
             menu: el('div', { className: 'overlay' }, [
-                el('h1', { textContent: '时间分身' }),
+                el('h1', { textContent: '门' }),
                 el('button', { textContent: '开始游戏', onclick: actions.start }),
-                el('p', { textContent: '走到绿色方块就算通关' }),
+                el('p', { textContent: '走到告示牌就算通关' }),
             ]),
             paused: el('div', { className: 'overlay' }, [
                 el('h2', { textContent: '已暂停' }),
                 el('button', { textContent: '继续', onclick: actions.resume }),
                 el('button', { textContent: '返回主菜单', onclick: actions.quit }),
             ]),
-            end: el('div', { className: 'overlay' }, [
+            win: el('div', { className: 'overlay' }, [
                 el('h2', { textContent: '通关！' }),
+                // el('button', { textContent: '再玩一次', onclick: actions.start }),
+                el('button', { textContent: '返回主菜单', onclick: actions.quit }),
+            ]),
+            lose: el('div', { className: 'overlay' }, [
+                el('h2', { textContent: '失败！' }),
                 // el('button', { textContent: '再玩一次', onclick: actions.start }),
                 el('button', { textContent: '返回主菜单', onclick: actions.quit }),
             ]),

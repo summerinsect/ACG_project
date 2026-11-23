@@ -64,7 +64,7 @@ class Player {
         const startPoint = this.levelManager.startPoint;
         this.state.x = startPoint.x + this.levelManager.platformInfo[startPoint.i].x;
         this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;
-        this.state.facing = 0;
+        this.state.facing = startPoint.facing;
         this.prevState = { ...this.state };
         this.update(0);
     }

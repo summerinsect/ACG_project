@@ -15,14 +15,28 @@ class PressurePlate{
         this.pressing = false;
     }
 
+    reset() {
+        this.pressing = false;
+    }
+
     tick() {
-        const playerPos = new THREE.Vector3(this.player.state.x, 0, this.player.state.z);
-        const dist = Math.hypot(playerPos.x - this.worldPos.x, playerPos.z - this.worldPos.z);
-        if (dist <= Layout.pressurePlateRadius && this.pressing == false) {
+        const worldPos = this.worldPos;
+        function checkPressure(playerPos) {
+            const dist = Math.hypot(playerPos.x - worldPos.x, playerPos.z - worldPos.z);
+            return dist <= Layout.pressurePlateRadius;
+        }
+        let pressed = false;
+        pressed |= checkPressure(new THREE.Vector3(this.player.state.x, 0, this.player.state.z));
+        this.levelManager.agents.forEach(agent => {
+            if (agent.valid) {
+                pressed |= checkPressure(new THREE.Vector3(agent.state.x, 0, agent.state.z));
+            }
+        });
+        if (pressed == true && this.pressing == false) {
             this.pressing = true;
             this.levelManager.doorOpen(this.index, true);
         }
-        if (dist > Layout.pressurePlateRadius && this.pressing == true) {
+        if (pressed == false && this.pressing == true) {
             this.pressing = false;
             this.levelManager.doorOpen(this.index, false);
         }

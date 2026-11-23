@@ -33,6 +33,6 @@ export default {
     // i 是 key 所在 platform 的索引，x 和 z 是其相对 platform 的坐标，y 默认为 1
     keyInfo: [],
     // i 是出生点/终点所在 platform 的索引，x 和 z 是其相对 platform 的坐标
-    startPoint: { i: 0, x: 0, z: 1 },
-    endPoint: { i: 3, x: 0, z: 0 },
+    startPoint: { i: 0, x: 0, z: 1, facing: Math.PI },
+    endPoint: { i: 3, x: 0, z: 0, facing: Math.PI / 2 },
 };

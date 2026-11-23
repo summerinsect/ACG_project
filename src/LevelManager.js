@@ -6,6 +6,7 @@ import { PressurePlate } from './PressurePlate.js'
 import { Key } from './Key.js'
 import { Player } from './Player.js'
 import { Agent } from './Agent.js'
+import { EndPointSign } from './EndPointSign.js'
 
 const levelModules = import.meta.glob('./Levels/Level*.js', { eager: true, import: 'default' });
 function getLevelData(id) {
@@ -65,6 +66,7 @@ class LevelManager {
                 console.error(`Road ${index} has invalid c value: ${info.c}`);
             }
         });
+        this.endPointSign = new EndPointSign(this);
         this.player = new Player(this);
         this.doorInfo.forEach((info, index) => {
             const door = new Door(this, index);
@@ -87,6 +89,8 @@ class LevelManager {
     reset() {
         this.player.setToStartPoint();
         this.doors.forEach(door => { door.reset(); });
+        this.pressurePlates.forEach(pressurePlate => { pressurePlate.reset(); });
+        this.agents.forEach(agent => { agent.reset(); });
     }
 
     tick() {
@@ -97,6 +101,7 @@ class LevelManager {
             this.pressurePlates.forEach(pressurePlate => { pressurePlate.tick(); });
             this.agents.forEach(agent => { agent.tick(); });
             this.recordStates.push({ ...this.player.state });
+            this.winCheck();
         }
     }
 
@@ -107,6 +112,9 @@ class LevelManager {
     }
 
     startRound() {
+        if (this.recording == true) return;
+        console.log(`Starting round ${this.round + 1}`);
+        this.tickCount = 0;
         this.recording = true;
         for (let i = 0; i < this.round; i++) {
             this.agents[i].startRound();
@@ -114,14 +122,29 @@ class LevelManager {
     }
 
     endRound() {
+        if (this.recording == false) return;
+        console.log(`Ending round ${this.round + 1}`);
         for (let i = 0; i < this.round; i++) {
             this.agents[i].endRound();
         }
         this.recording = false;
+        if (this.round == this.maxAgent) {
+            this.game.setState('lose');
+            return;
+        }
         this.agents[this.round].setStates(this.recordStates);
         this.recordStates = [];
         this.round++;
         this.reset();
+    }
+
+    winCheck() {
+        const playerPos = new THREE.Vector3(this.player.state.x, 0, this.player.state.z);
+        const targetPos = new THREE.Vector3(this.endPoint.x + this.platformInfo[this.endPoint.i].x, 0, this.endPoint.z + this.platformInfo[this.endPoint.i].z);
+        const dist = Math.hypot(playerPos.x - targetPos.x, playerPos.z - targetPos.z);
+        if (dist < 0.3) {
+            this.game.setState('win');
+        }
     }
 
     valid(pos) {

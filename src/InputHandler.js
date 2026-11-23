@@ -39,15 +39,16 @@ class InputHandler {
             this.game.setState('paused');
         }
         if (this.consume('KeyO')) {
-            this.game.setState('end'); // 直接通关，仅供测试
+            this.game.setState('win'); // 直接通关，仅供测试
+        }
+        if (this.consume('KeyK')) {
+            this.game.setState('lose'); // 直接失败，仅供测试
         }
         if (this.consume('KeyR')) {
             this.game.levelManager.startRound();
-            console.log(`press R, start round`);
         }
         if (this.consume('KeyE')) {
             this.game.levelManager.endRound();
-            console.log(`press E, end round`);
         }
     }
 
