@@ -52,7 +52,8 @@ class Agent {
         if (!this.valid) return;
         this.prevState = { ... this.state };
         if (this.tickCount < this.states.length - 1) {
-            this.state = this.states[++this.tickCount];
+            this.state = this.states[this.tickCount];
+            ++this.tickCount;
         }
     }
 
@@ -80,10 +81,6 @@ class Agent {
     endRound() {
         this.valid = false;
         this.root.visible = false;
-    }
-
-    reset() {
-        this.endRound();
     }
 }
 

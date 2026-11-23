@@ -1,6 +1,6 @@
 export default {
-    name: "测试关卡 1",
-    maxAgents: 2,
+    levelName: "测试关卡 1",
+    maxAgent: 2,
     // 坐标 (x, z) 必须是 5 的整数倍
     platformInfo: [
         { x: 0, z: 0 },

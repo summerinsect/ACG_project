@@ -54,7 +54,7 @@ class Game {
     }
 
     reset() {
-        this.levelManager.reset();
+        this.levelManager.resetLevel();
     }
 
     // 界面状态机

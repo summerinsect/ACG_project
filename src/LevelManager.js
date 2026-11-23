@@ -86,11 +86,14 @@ class LevelManager {
         }
     }
 
-    reset() {
+    resetLevel() {
         this.player.setToStartPoint();
         this.doors.forEach(door => { door.reset(); });
         this.pressurePlates.forEach(pressurePlate => { pressurePlate.reset(); });
-        this.agents.forEach(agent => { agent.reset(); });
+        this.agents.forEach(agent => { agent.setToStartPoint(); agent.endRound(); }));
+        this.recording = false;
+        this.recordingStates = [];
+        this.round = 0;
     }
 
     tick() {
@@ -98,8 +101,8 @@ class LevelManager {
             this.tickCount++;
             this.player.tick();
             this.doors.forEach(door => { door.tick(); });
-            this.pressurePlates.forEach(pressurePlate => { pressurePlate.tick(); });
             this.agents.forEach(agent => { agent.tick(); });
+            this.pressurePlates.forEach(pressurePlate => { pressurePlate.tick(); });
             this.recordStates.push({ ...this.player.state });
             this.winCheck();
         }
@@ -135,7 +138,9 @@ class LevelManager {
         this.agents[this.round].setStates(this.recordStates);
         this.recordStates = [];
         this.round++;
-        this.reset();
+        this.player.setToStartPoint();
+        this.doors.forEach(door => { door.reset(); });
+        this.pressurePlates.forEach(pressurePlate => { pressurePlate.reset(); });
     }
 
     winCheck() {
@@ -143,6 +148,7 @@ class LevelManager {
         const targetPos = new THREE.Vector3(this.endPoint.x + this.platformInfo[this.endPoint.i].x, 0, this.endPoint.z + this.platformInfo[this.endPoint.i].z);
         const dist = Math.hypot(playerPos.x - targetPos.x, playerPos.z - targetPos.z);
         if (dist < 0.3) {
+            this.recording = false;
             this.game.setState('win');
         }
     }

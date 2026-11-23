@@ -1,5 +1,5 @@
 export default {
-    name: "测试关卡 2",
+    levelName: "测试关卡 2",
     maxAgent: 2,
     maxRoundTime: 30,
     // 坐标 (x, z) 必须是 5 的整数倍

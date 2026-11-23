@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import './ui.css'
+import './UI.css'
 
 function el(tag, props = {}, children = []) {
     const node = document.createElement(tag);
