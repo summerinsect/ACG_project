@@ -42,9 +42,11 @@ class Game {
         this.levelManager = null;
 
         this.UI = new UI({
-            start: () => this.setState('playing'),
-            resume: () => this.setState('playing'),
-            quit: () => this.setState('menu'),
+            start: () => { this.levelManager.prepareRound(0); this.setState('playing'); },
+            retry: () => { this.levelManager.retryThisRound(); this.setState('playing'); },
+            cancel: () => { this.levelManager.cancelLastRound(); this.setState('playing'); },
+            resume: () => { this.setState('playing'); },
+            quit: () => { this.levelManager.prepareRound(0); this.setState('menu'); },
         });
         this.state = 'menu';
         this.UI.show(this.state);
@@ -64,10 +66,7 @@ class Game {
         this.inputHandler.reset();
         this.accumulator = 0;
 
-        if (next == 'menu') {
-            this.reset();
-        }
-        else if (document.pointerLockElement == this.canvas) {
+        if (document.pointerLockElement == this.canvas) {
             document.exitPointerLock();
         }
     }

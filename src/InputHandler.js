@@ -45,17 +45,22 @@ class InputHandler {
             this.game.setState('lose'); // 直接失败，仅供测试
         }
         if (this.consume('KeyT')) {
-            if (this.game.state === 'playing') {
-                this.game.levelManager.cancelLastRound();
+            if (this.game.state == 'playing') {
+                if (this.game.levelManager.recording == false) {
+                    this.game.levelManager.cancelLastRound();
+                }
+                else { // this.game.levelManager.recording == true;
+                    this.game.levelManager.retryThisRound();
+                }
             }
         }
         if (this.consume('KeyR')) {
-            if (this.game.state === 'playing') {
+            if (this.game.state == 'playing') {
                 this.game.levelManager.startRound();
             }
         }
         if (this.consume('KeyE')) {
-            if (this.game.state === 'playing') {
+            if (this.game.state == 'playing') {
                 this.game.levelManager.endRound();
             }
         }

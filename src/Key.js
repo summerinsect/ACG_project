@@ -49,6 +49,7 @@ class Key{
     prepareRound() {
         this.setToInitialPosition();
         this.assignedAgent = -1;
+        this.taken = false;
         this.root.visible = true;
     }
 
