@@ -4,9 +4,10 @@ import { Layout } from './constant.js'
 const wrapAngle = a => a - 2 * Math.PI * Math.floor((a + Math.PI) / (2 * Math.PI));
 
 class Agent {
-    constructor(levelManager) {
+    constructor(levelManager, index) {
         this.levelManager = levelManager;
         this.game = this.levelManager.game;
+        this.index = index;
         this.load();
         this.tickCount = 0; // agent 被创建以来的时间
         this.states = [];
@@ -40,7 +41,8 @@ class Agent {
     }
 
     setToStartPoint() {
-        const startPoint = this.levelManager.startPoint;
+        console.log(`set agent ${this.index} to start point`);
+        const startPoint = this.levelManager.startPoint[this.index];
         this.state.x = startPoint.x + this.levelManager.platformInfo[startPoint.i].x;
         this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;
         this.state.facing = startPoint.facing;
@@ -53,14 +55,14 @@ class Agent {
     tick() {
         if (!this.valid) return;
         this.prevState = { ... this.state };
-        if (this.tickCount < this.states.length - 1) {
-            this.state = this.states[this.tickCount];
-            this.pickUpKey.forEach(info => {
+        if (this.tickCount < this.states.playerStates.length) {
+            this.state = { ... this.states.playerStates[this.tickCount] };
+            this.states.pickUpKey.forEach(info => {
                 if (info.tick == this.tickCount) {
                     this.levelManager.keys[info.index].pickUpByAgent();
                 }
             });
-            this.openDoor.forEach(info => {
+            this.states.openDoor.forEach(info => {
                 if (info.tick == this.tickCount) {
                     this.levelManager.doors[info.index].openWithKeyByAgent();
                 }
@@ -80,29 +82,22 @@ class Agent {
         this.root.rotation.y = wrapAngle(facing);
     }
 
-    setStates(recordedStates) {
-        this.states = recordedStates;
-        console.log(`Agent has ${this.states.length} states`);
-    }
-
-    startRound() {
-        this.tickCount = 0;
-        this.valid = true;
-        this.root.visible = true;
-    }
-
-    endRound() {
+    prepareRound() {
         this.valid = false;
-        this.root.visible = false;
-    }
-
-    reset() {
+        this.root.visible = (this.index < this.levelManager.round);
         this.setToStartPoint();
-        this.endRound();
         this.tickCount = 0;
         this.states = [];
         this.pickUpKey = [];
         this.openDoor = [];
+    }
+
+    setStates(recordedStates) {
+        this.states = recordedStates;
+        console.log(`Agent has ${this.states.playerStates.length} states`);
+        this.states.pickUpKey.forEach(info => {
+            this.levelManager.keys[info.index].assignedAgent = this.index;
+        });
     }
 
     agentPlayerCollision(player) {

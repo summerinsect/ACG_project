@@ -46,7 +46,6 @@ class Player {
         const pos1 = new THREE.Vector3(newX, 0, newZ);
         const pos2 = new THREE.Vector3(newX, 0, this.state.z);
         const pos3 = new THREE.Vector3(this.state.x, 0, newZ);
-        const tmpx = this.state.x, tmpz = this.state.z;
         if (this.levelManager.valid(pos1)) {
             this.state.x = newX;
             this.state.z = newZ;
@@ -60,7 +59,7 @@ class Player {
     }
 
     setToStartPoint() {
-        const startPoint = this.levelManager.startPoint;
+        const startPoint = this.levelManager.startPoint[this.levelManager.round];
         this.state.x = startPoint.x + this.levelManager.platformInfo[startPoint.i].x;
         this.state.z = startPoint.z + this.levelManager.platformInfo[startPoint.i].z;
         this.state.facing = startPoint.facing;
@@ -68,7 +67,7 @@ class Player {
         this.update(0);
     }
 
-    reset() {
+    prepareRound() {
         this.setToStartPoint();
         this.keyCount = 0;
     }
@@ -98,6 +97,8 @@ class Player {
             const diff = wrapAngle(targetFacing - this.state.facing);
             this.state.facing = wrapAngle(this.state.facing + Math.sign(diff) * Math.min(Math.abs(diff), 0.1));
         }
+
+        this.levelManager.statesThisRound.playerStates.push({ ...this.state });
     }
 
     update(alpha) {

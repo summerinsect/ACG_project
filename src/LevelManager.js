@@ -28,7 +28,12 @@ class LevelManager {
         this.keys = [];
         this.agents = [];
         this.recording = false;
-        this.recordStates = [];
+        this.recordedStates = [];
+        this.statesThisRound = {
+            playerStates: [],
+            openDoor: [],
+            pickUpKey: [],
+        };
         this.round = 0;
         this.tickCount = 0; // 本轮录制开始以来的时间
     }
@@ -82,20 +87,9 @@ class LevelManager {
             this.keys.push(key);
         });
         for (let i = 0; i < this.maxAgent; i++) {
-            const agent = new Agent(this);
+            const agent = new Agent(this, i);
             this.agents.push(agent);
         }
-    }
-
-    resetLevel() {
-        this.player.reset();
-        this.doors.forEach(door => { door.reset(); });
-        this.pressurePlates.forEach(pressurePlate => { pressurePlate.reset(); });
-        this.agents.forEach(agent => { agent.reset(); });
-        this.keys.forEach(key => { key.resetLevel(); });
-        this.recording = false;
-        this.recordStates = [];
-        this.round = 0;
     }
 
     tick() {
@@ -112,7 +106,6 @@ class LevelManager {
             this.agents.forEach(agent => { agent.tick(); });
             this.pressurePlates.forEach(pressurePlate => { pressurePlate.tick(); });
             this.keys.forEach(key => { key.tick(); });
-            this.recordStates.push({ ...this.player.state });
             this.winCheck();
         }
     }
@@ -124,34 +117,70 @@ class LevelManager {
         this.keys.forEach(key => { key.update(alpha); });
     }
 
-    startRound() {
-        if (this.recording == true) return;
-        console.log(`Starting round ${this.round + 1}`);
+
+    prepareRound(round) {
+        if (this.recordedStates.length < round) {
+            // 不管如何进入这一轮，都必须有足够的录像
+            console.log(`invalid round ${round}, only ${this.recordedStates.length} recorded states available`);
+        }
+        this.round = round;
+        this.recording = false;
         this.tickCount = 0;
+        this.statesThisRound = {
+            playerStates: [],
+            openDoor: [],
+            pickUpKey: [],
+        };
+        while (this.recordedStates.length > this.round) {
+            this.recordedStates.pop();
+        }
+        // 设置场景中所有物体的静态状态
+        this.player.prepareRound();
+        this.doors.forEach(door => { door.prepareRound(); });
+        this.pressurePlates.forEach(pressurePlate => { pressurePlate.prepareRound(); });
+        this.keys.forEach(key => { key.prepareRound(); });
+        this.agents.forEach(agent => { agent.prepareRound(); });
+        // 设置 agent 的录像
+        for (let i = 0; i < this.round; i++) {
+            this.agents[i].setStates(this.recordedStates[i]);
+        }
+    }
+
+    resetLevel() {
+        this.prepareRound(0);
+    }
+
+    retryThisRound() {
+        if (this.recording == false) return;
+        this.recording = false;
+        this.prepareRound(this.round);
+    }
+
+    cancelLastRound() {
+        if (this.recording == true || this.round <= 0) return;
+        this.recording = true;
+        this.prepareRound(this.round - 1);
+    }
+
+    startRound() {
+        if (this.recording) return;
+        console.log(`Starting round ${this.round + 1}`);
         this.recording = true;
         for (let i = 0; i < this.round; i++) {
-            this.agents[i].startRound();
+            this.agents[i].valid = true;
         }
     }
 
     endRound() {
-        if (this.recording == false) return;
+        if (!this.recording) return;
         console.log(`Ending round ${this.round + 1}`);
-        for (let i = 0; i < this.round; i++) {
-            this.agents[i].endRound();
-        }
         this.recording = false;
+        this.recordedStates.push(this.statesThisRound);
         if (this.round == this.maxAgent) {
             this.game.setState('lose');
             return;
         }
-        this.agents[this.round].setStates(this.recordStates);
-        this.recordStates = [];
-        this.round++;
-        this.player.reset();
-        this.doors.forEach(door => { door.reset(); });
-        this.pressurePlates.forEach(pressurePlate => { pressurePlate.reset(); });
-        this.keys.forEach(key => { key.reset(); });
+        this.prepareRound(this.round + 1);
     }
 
     winCheck() {
@@ -159,7 +188,16 @@ class LevelManager {
         const targetPos = new THREE.Vector3(this.endPoint.x + this.platformInfo[this.endPoint.i].x, 0, this.endPoint.z + this.platformInfo[this.endPoint.i].z);
         const dist = Math.hypot(playerPos.x - targetPos.x, playerPos.z - targetPos.z);
         if (dist < 0.3) {
+            // 获胜时保留视觉状态，但清空所有逻辑状态
             this.recording = false;
+            this.round = 0;
+            this.tickCount = 0;
+            this.recordedStates = [];
+            this.statesThisRound = {
+                playerStates: [],
+                openDoor: [],
+                pickUpKey: [],
+            };
             this.game.setState('win');
         }
     }

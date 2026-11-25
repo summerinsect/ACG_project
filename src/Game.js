@@ -1,4 +1,3 @@
-// import './style.css'
 import * as THREE from 'three'
 import { LevelManager } from './LevelManager.js'
 import { FollowCamera } from './FollowCamera.js'

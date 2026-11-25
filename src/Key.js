@@ -14,6 +14,7 @@ class Key{
         this.prevRotation = 0;
         this.currentRotation = 0;
         this.assignedAgent = -1;
+        this.taken = false;
     }
 
     loadModel() {
@@ -45,14 +46,9 @@ class Key{
         this.root.rotation.y = 0;
     }
 
-    resetLevel() {
+    prepareRound() {
         this.setToInitialPosition();
         this.assignedAgent = -1;
-        this.root.visible = true;
-    }
-
-    reset() {
-        this.setToInitialPosition();
         this.root.visible = true;
     }
 
@@ -68,20 +64,18 @@ class Key{
 
     pickUpByPlayer() {
         console.log('try to pick up key');
-        if (this.assignedAgent != -1) return;
+        if (this.taken == true || this.assignedAgent != -1) return;
         const player = this.levelManager.player;
         const dist = Math.hypot(this.root.position.x - player.state.x, this.root.position.z - player.state.z); // 静态物体可以直接用世界坐标
         if (dist > Layout.keyPickDist) return;
         console.log(`Player successfully picked up key`);
         this.game.levelManager.player.keyCount++;
-        this.assignedAgent = this.levelManager.round;
+        this.taken = true;
         this.root.visible = false;
-        if (this.levelManager.round < this.levelManager.maxAgent) {
-            this.levelManager.agents[this.levelManager.round].pickUpKey.push({
-                tick: this.levelManager.tickCount,
-                index: this.index,
-            });
-        }
+        this.levelManager.statesThisRound.pickUpKey.push({
+            tick: this.levelManager.tickCount,
+            index: this.index,
+        });
     }
 
     pickUpByAgent() {

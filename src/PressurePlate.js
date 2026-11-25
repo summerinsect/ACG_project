@@ -15,8 +15,9 @@ class PressurePlate{
         this.pressing = false;
     }
 
-    reset() {
+    prepareRound() {
         this.pressing = false;
+        // 后续可能会做一些动画？
     }
 
     tick() {

@@ -82,10 +82,11 @@ class Door{
 		this.openByKey = (info.p == -1);
 	}
 
-	reset() {
+	prepareRound() {
 		this.prevAngle = this.currentAngle = 0;
 		this.opening = false;
-		this.update(0);
+		this.leftDoorRoot.rotation.y = 0;
+		this.rightDoorRoot.rotation.y = 0;
 	}
 
 	tick() {
@@ -143,12 +144,10 @@ class Door{
         if (dist > Layout.doorOpenDist) return;
 		this.player.keyCount--;
 		this.opening = true;
-		if (this.levelManager.round < this.levelManager.maxAgent) {
-			this.levelManager.agents[this.levelManager.round].openDoor.push({
-				tick: this.levelManager.tickCount,
-				index: this.index,
-			});
-		}
+		this.levelManager.statesThisRound.openDoor.push({
+            tick: this.levelManager.tickCount,
+            index: this.index,
+        });
 	}
 
 	openWithKeyByAgent() {

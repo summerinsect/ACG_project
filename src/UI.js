@@ -19,6 +19,7 @@ class UI {
             paused: el('div', { className: 'overlay' }, [
                 el('h2', { textContent: '已暂停' }),
                 el('button', { textContent: '继续', onclick: actions.resume }),
+                // el('button', { textContent: '撤销上一轮', onclick: actions.cancel }),
                 el('button', { textContent: '返回主菜单', onclick: actions.quit }),
             ]),
             win: el('div', { className: 'overlay' }, [
@@ -28,7 +29,7 @@ class UI {
             ]),
             lose: el('div', { className: 'overlay' }, [
                 el('h2', { textContent: '失败！' }),
-                // el('button', { textContent: '再玩一次', onclick: actions.start }),
+                // el('button', { textContent: '撤销上一轮', onclick: actions.cancel }),
                 el('button', { textContent: '返回主菜单', onclick: actions.quit }),
             ]),
             playing: el('div', { className: 'hud' }),

@@ -30,6 +30,11 @@ export default {
         { i: 2, x: 0, z: 0 },
     ],
     // i 是出生点/终点所在 platform 的索引，x 和 z 是其相对 platform 的坐标
-    startPoint: { i: 0, x: 0, z: 1, facing: Math.PI },
+    // 每一轮的出生点不同，避免重叠
+    startPoint: [
+        { i: 0, x: 0, z: 1, facing: Math.PI },
+        { i: 0, x: -0.5, z: 1, facing: Math.PI },
+        { i: 0, x: 0.5, z: 1, facing: Math.PI },
+    ],
     endPoint: { i: 1, x: 0, z: 0, facing: Math.PI / 2 },
 };
