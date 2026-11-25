@@ -16,14 +16,10 @@ class Game {
         this.scene.background = new THREE.Color(0xaaaaaa);
 
         const ambient = new THREE.HemisphereLight(0xffffff, 0x8899aa, 2);
-        const light = new THREE.DirectionalLight(0xffffff, 3);
-        light.position.set(5, 10, 7);
-
-        // const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.3);
         this.scene.add(ambient);
 
-        // const light = new THREE.DirectionalLight();
-        // light.position.set(0.2, 1, 1);
+        const light = new THREE.DirectionalLight(0xffffff, 3);
+        light.position.set(5, 10, 7);
         this.scene.add(light);
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -54,7 +50,7 @@ class Game {
         });
         this.state = 'menu';
         this.UI.show(this.state);
-        this.levelManager = new LevelManager(this, 3);
+        this.levelManager = new LevelManager(this, 2);
         this.levelManager.initLevel();
     }
 

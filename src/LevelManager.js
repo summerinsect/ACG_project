@@ -7,6 +7,7 @@ import { Key } from './Key.js'
 import { Player } from './Player.js'
 import { Agent } from './Agent.js'
 import { EndPointSign } from './EndPointSign.js'
+import { checkLevelData } from './CheckData.js'
 
 const levelModules = import.meta.glob('./Levels/Level*.js', { eager: true, import: 'default' });
 function getLevelData(id) {
@@ -40,6 +41,7 @@ class LevelManager {
 
     loadLevelData(levelId) {
         this.levelData = getLevelData(levelId);
+        checkLevelData(this.levelData, `Level${levelId}`);
         this.levelName = this.levelData.levelName;
         this.maxAgent = this.levelData.maxAgent;
         this.maxRoundTime = this.levelData.maxRoundTime;
