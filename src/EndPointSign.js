@@ -17,7 +17,7 @@ class EndPointSign {
         this.root = new THREE.Group();
         const rodGeometry = new THREE.BoxGeometry(0.1, 0.3, 0.1);
         const plateGeometry = new THREE.BoxGeometry(0.1, 0.3, 0.5);
-        const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const material = new THREE.MeshBasicMaterial({ color: 0x1a1a1a });
         this.rod = new THREE.Mesh(rodGeometry, material);
         this.plate = new THREE.Mesh(plateGeometry, material);
         this.rod.position.set(0, 0.15, 0);

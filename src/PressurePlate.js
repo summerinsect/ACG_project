@@ -8,7 +8,7 @@ class PressurePlate{
         this.index = index;
         const info = levelManager.pressurePlateInfo[index];
         const platform = levelManager.platforms[info.i];
-        this.mesh = new THREE.Mesh(MeshAttributes.pressurePlateGeometry, MeshAttributes.pressurePlateMaterial);
+        this.mesh = new THREE.Mesh(MeshAttributes.pressurePlateGeometry, MeshAttributes.pressurePlateMaterials[index]);
         this.mesh.position.set(platform.mesh.position.x + info.x, Layout.platformThickness / 2 + Layout.pressurePlateThickness / 2, platform.mesh.position.z + info.z);
         levelManager.levelRoot.add(this.mesh);
         this.worldPos = new THREE.Vector3(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z);

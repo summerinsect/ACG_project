@@ -15,11 +15,15 @@ class Game {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0xaaaaaa);
 
-        const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.3);
+        const ambient = new THREE.HemisphereLight(0xffffff, 0x8899aa, 2);
+        const light = new THREE.DirectionalLight(0xffffff, 3);
+        light.position.set(5, 10, 7);
+
+        // const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.3);
         this.scene.add(ambient);
 
-        const light = new THREE.DirectionalLight();
-        light.position.set(0.2, 1, 1);
+        // const light = new THREE.DirectionalLight();
+        // light.position.set(0.2, 1, 1);
         this.scene.add(light);
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true });

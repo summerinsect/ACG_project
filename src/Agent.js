@@ -24,9 +24,9 @@ class Agent {
         const headGeometry = new THREE.SphereGeometry(0.12, 32, 32);
         const bodyGeometry = new THREE.SphereGeometry(0.2, 32, 32);
         const noseGeometry = new THREE.CapsuleGeometry(0.02, 0.06, 10, 20, 1);
-        const headMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const noseMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const headMaterial = new THREE.MeshStandardMaterial({ color: 0xa8d8ff });
+        const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xa8d8ff });
+        const noseMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
         const head = new THREE.Mesh(headGeometry, headMaterial);
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
         const nose = new THREE.Mesh(noseGeometry, noseMaterial);

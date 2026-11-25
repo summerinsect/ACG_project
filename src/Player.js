@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Layout } from './constant.js'
+import { Layout, MeshAttributes } from './constant.js'
 
 const wrapAngle = a => a - 2 * Math.PI * Math.floor((a + Math.PI) / (2 * Math.PI));
 
@@ -23,9 +23,9 @@ class Player {
         const headGeometry = new THREE.SphereGeometry(0.15, 32, 32);
         const bodyGeometry = new THREE.CylinderGeometry(0.1, 0.2, 0.6, 32);
         const noseGeometry = new THREE.BoxGeometry(0.05, 0.05, 0.05);
-        const headMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const noseMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const headMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const noseMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
         const head = new THREE.Mesh(headGeometry, headMaterial);
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
         const nose = new THREE.Mesh(noseGeometry, noseMaterial);
