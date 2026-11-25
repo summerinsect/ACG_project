@@ -103,7 +103,7 @@ class Door{
 		if (this.currentAngle <= 0) {
 			this.currentAngle = 0;
 		}
-		this.doorPlayerCollision(this.game.levelManager.player);
+		this.doorPlayerCollision(this.levelManager.player);
 	}
 
 	update(alpha) {

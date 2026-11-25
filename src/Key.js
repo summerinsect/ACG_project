@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Layout, MeshAttributes } from './constant.js'
+import { Layout, MeshAttributes, KeyMesh } from './constant.js'
 
 const wrapAngle = a => a - 2 * Math.PI * Math.floor((a + Math.PI) / (2 * Math.PI));
 
@@ -19,14 +19,10 @@ class Key{
 
     loadModel() {
         this.root = new THREE.Group();
-        const geometry1 = new THREE.CylinderGeometry(0.15, 0.15, 0.05);
-        const geometry2 = new THREE.BoxGeometry(0.05, 0.4, 0.05);
-        const geometry3 = new THREE.BoxGeometry(0.05, 0.05, 0.05);
-        const material = new THREE.MeshBasicMaterial({ color: 0xffc90e });
-        const mesh1 = new THREE.Mesh(geometry1, material);
-        const mesh2 = new THREE.Mesh(geometry2, material);
-        const mesh3 = new THREE.Mesh(geometry3, material);
-        const mesh4 = new THREE.Mesh(geometry3, material);
+        const mesh1 = new THREE.Mesh(KeyMesh.geometry1, KeyMesh.material);
+        const mesh2 = new THREE.Mesh(KeyMesh.geometry2, KeyMesh.material);
+        const mesh3 = new THREE.Mesh(KeyMesh.geometry3, KeyMesh.material);
+        const mesh4 = new THREE.Mesh(KeyMesh.geometry3, KeyMesh.material);
         mesh1.position.set(0, 0.5, 0);
         mesh1.rotation.set(0, 0, Math.PI / 2);
         mesh2.position.set(0, 0.2, 0);
@@ -70,7 +66,7 @@ class Key{
         const dist = Math.hypot(this.root.position.x - player.state.x, this.root.position.z - player.state.z); // 静态物体可以直接用世界坐标
         if (dist > Layout.keyPickDist) return;
         console.log(`Player successfully picked up key`);
-        this.game.levelManager.player.keyCount++;
+        this.levelManager.player.keyCount++;
         this.taken = true;
         this.root.visible = false;
         this.levelManager.statesThisRound.pickUpKey.push({

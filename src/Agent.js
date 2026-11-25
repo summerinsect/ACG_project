@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Layout } from './constant.js'
+import { Layout, AgentMesh } from './constant.js'
 
 const wrapAngle = a => a - 2 * Math.PI * Math.floor((a + Math.PI) / (2 * Math.PI));
 
@@ -21,15 +21,9 @@ class Agent {
     load() {
         // 先用一个简单的模型代替
         this.root = new THREE.Group();
-        const headGeometry = new THREE.SphereGeometry(0.12, 32, 32);
-        const bodyGeometry = new THREE.SphereGeometry(0.2, 32, 32);
-        const noseGeometry = new THREE.CapsuleGeometry(0.02, 0.06, 10, 20, 1);
-        const headMaterial = new THREE.MeshStandardMaterial({ color: 0xa8d8ff });
-        const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xa8d8ff });
-        const noseMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-        const head = new THREE.Mesh(headGeometry, headMaterial);
-        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-        const nose = new THREE.Mesh(noseGeometry, noseMaterial);
+        const head = new THREE.Mesh(AgentMesh.headGeometry, AgentMesh.headMaterial);
+        const body = new THREE.Mesh(AgentMesh.bodyGeometry, AgentMesh.bodyMaterial);
+        const nose = new THREE.Mesh(AgentMesh.noseGeometry, AgentMesh.noseMaterial);
         this.root.position.y = Layout.platformThickness / 2;
         head.position.set(0, 0.48, 0);
         body.position.set(0, 0.2, 0);

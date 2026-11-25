@@ -21,9 +21,9 @@ export const color = Object.freeze({
     background: 0xdfe7ee,
     platform: 0xd8cbb3,
     road: 0xa89880,
-    player: 0xffffff, // not used
-    agent: 0xa8d8ff, // not used
-    endPointSign: 0x1a1a1a, // not used
+    player: 0xffffff,
+    agent: 0xa8d8ff,
+    endPointSign: 0x1a1a1a,
     key: 0xffc90e, // also used for door opened with key 
     pressurePlate: [
         0xe53935,
@@ -53,4 +53,35 @@ export const MeshAttributes = Object.freeze({
         new THREE.MeshStandardMaterial({ color: color.pressurePlate[4] }),
         new THREE.MeshStandardMaterial({ color: color.pressurePlate[5] }),
     ],
+});
+
+export const PlayerMesh = Object.freeze({
+    headGeometry: new THREE.SphereGeometry(0.15, 32, 32),
+    bodyGeometry: new THREE.CylinderGeometry(0.1, 0.2, 0.6, 32),
+    noseGeometry: new THREE.BoxGeometry(0.05, 0.05, 0.05),
+    headMaterial: new THREE.MeshStandardMaterial({ color: color.player }),
+    bodyMaterial: new THREE.MeshStandardMaterial({ color: color.player }),
+    noseMaterial: new THREE.MeshStandardMaterial({ color: 0xff0000 }),
+});
+
+export const AgentMesh = Object.freeze({
+    headGeometry: new THREE.SphereGeometry(0.12, 32, 32),
+    bodyGeometry: new THREE.SphereGeometry(0.2, 32, 32),
+    noseGeometry: new THREE.CapsuleGeometry(0.02, 0.06, 10, 20, 1),
+    headMaterial: new THREE.MeshStandardMaterial({ color: color.agent }),
+    bodyMaterial: new THREE.MeshStandardMaterial({ color: color.agent }),
+    noseMaterial: new THREE.MeshStandardMaterial({ color: 0xff0000 }),
+});
+
+export const EndPointSignMesh = Object.freeze({
+    rodGeometry: new THREE.BoxGeometry(0.1, 0.3, 0.1),
+    plateGeometry: new THREE.BoxGeometry(0.1, 0.3, 0.5),
+    material: new THREE.MeshStandardMaterial({ color: color.endPointSign }),
+});
+
+export const KeyMesh = Object.freeze({
+    geometry1: new THREE.CylinderGeometry(0.15, 0.15, 0.05),
+    geometry2: new THREE.BoxGeometry(0.05, 0.4, 0.05),
+    geometry3: new THREE.BoxGeometry(0.05, 0.05, 0.05),
+    material: new THREE.MeshBasicMaterial({ color: 0xffc90e }),
 });

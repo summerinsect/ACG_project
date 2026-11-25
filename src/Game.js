@@ -54,6 +54,12 @@ class Game {
         this.levelManager.initLevel();
     }
 
+    loadNewLevel(levelId) {
+        if (this.levelManager) this.scene.remove(this.levelManager.levelRoot);
+        this.levelManager = new LevelManager(this, levelId);
+        this.levelManager.initLevel();
+    }
+
     reset() {
         this.levelManager.resetLevel();
     }

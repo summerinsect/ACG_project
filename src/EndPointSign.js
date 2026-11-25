@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Layout } from './constant.js';
+import { Layout, EndPointSignMesh } from './constant.js';
 
 class EndPointSign {
     constructor(levelManager) {
@@ -15,15 +15,12 @@ class EndPointSign {
 
     loadModel() {
         this.root = new THREE.Group();
-        const rodGeometry = new THREE.BoxGeometry(0.1, 0.3, 0.1);
-        const plateGeometry = new THREE.BoxGeometry(0.1, 0.3, 0.5);
-        const material = new THREE.MeshBasicMaterial({ color: 0x1a1a1a });
-        this.rod = new THREE.Mesh(rodGeometry, material);
-        this.plate = new THREE.Mesh(plateGeometry, material);
-        this.rod.position.set(0, 0.15, 0);
-        this.plate.position.set(0, 0.45, 0);
-        this.root.add(this.rod);
-        this.root.add(this.plate);
+        const rod = new THREE.Mesh(EndPointSignMesh.rodGeometry, EndPointSignMesh.material);
+        const plate = new THREE.Mesh(EndPointSignMesh.plateGeometry, EndPointSignMesh.material);
+        rod.position.set(0, 0.15, 0);
+        plate.position.set(0, 0.45, 0);
+        this.root.add(rod);
+        this.root.add(plate);
         this.levelManager.levelRoot.add(this.root);
     }
 }
