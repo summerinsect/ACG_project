@@ -3,6 +3,14 @@ import { LevelManager } from './LevelManager.js'
 import { FollowCamera } from './FollowCamera.js'
 import { InputHandler } from './InputHandler.js'
 import { UI } from './UI.js'
+import { loadProgress, saveProgress, clearProgress } from './ProgressManager.js';
+
+const levelModules = import.meta.glob('./Levels/Level*.js', { eager: true, import: 'default' });
+const levels = Object.entries(levelModules).map(([path, data]) => ({
+    id: Number(path.match(/Level(\d+)\.js$/)[1]),
+    name: data.levelName,
+    data,
+})).sort((a, b) => a.id - b.id);
 
 class Game {
     constructor() {
@@ -39,19 +47,59 @@ class Game {
         this.accumulator = 0;
         this.tickCount = 0;
 
-        this.levelManager = null;
+        this.levels = levels;
+        this.progress = loadProgress();
+        this.initUI();
 
+        this.currentIndex = null;
+        this.levelManager = null;
+    }
+
+    initUI() {
         this.UI = new UI({
-            start: () => { this.levelManager.prepareRound(0); this.setState('playing'); },
-            retry: () => { this.levelManager.retryThisRound(); this.setState('playing'); },
+            selectLevel: () => {
+                this.UI.refreshLevelSelect(levels, this.progress);
+                this.setState('levelSelect');
+            },
+            backToMenu: () => {
+                this.setState('menu');
+            },
+            clearProgress: () => {
+                clearProgress(this.progress);
+                this.UI.refreshLevelSelect(levels, this.progress);
+            },
+            startLevel: index => {
+                this.currentIndex = index;
+                if (this.levelManager) this.scene.remove(this.levelManager.levelRoot);
+                this.levelManager = new LevelManager(this, index);
+                this.levelManager.initLevel();
+                this.setState('playing');
+            },
+            restart: () => {
+                this.UI.actions.startLevel(this.currentIndex);
+            },
+            nextLevel: () => {
+                this.UI.actions.startLevel(this.currentIndex + 1);
+            },
+            win: () => {
+                this.progress.completed.add(this.levels[this.currentIndex].id);
+                saveProgress(this.progress);
+                this.UI.setNextLevelAvailable(this.currentIndex + 1 < this.levels.length);
+                this.setState('win');
+            },
+            lose: () => {
+                this.setState('lose');
+            },
+            retry: () => {
+                this.levelManager.retryThisRound();
+                this.setState('playing');
+            },
             cancel: () => { this.levelManager.cancelLastRound(); this.setState('playing'); },
             resume: () => { this.setState('playing'); },
             quit: () => { this.levelManager.prepareRound(0); this.setState('menu'); },
         });
         this.state = 'menu';
         this.UI.show(this.state);
-        this.levelManager = new LevelManager(this, 2);
-        this.levelManager.initLevel();
     }
 
     loadNewLevel(levelId) {
@@ -71,6 +119,11 @@ class Game {
 
         this.inputHandler.reset();
         this.accumulator = 0;
+
+        if (next == 'menu' || next == 'levelSelect') {
+            if (this.levelManager) this.scene.remove(this.levelManager.levelRoot);
+            this.levelManager = null;
+        }
 
         if (document.pointerLockElement == this.canvas) {
             document.exitPointerLock();

@@ -9,13 +9,6 @@ import { Agent } from './Agent.js'
 import { EndPointSign } from './EndPointSign.js'
 import { checkLevelData } from './CheckData.js'
 
-const levelModules = import.meta.glob('./Levels/Level*.js', { eager: true, import: 'default' });
-function getLevelData(id) {
-    const data = levelModules[`./Levels/Level${id}.js`];
-    if (!data) throw new Error(`找不到关卡 ${id}`);
-    return data;
-}
-
 class LevelManager {
     constructor(game, levelId) {
         this.game = game;
@@ -40,7 +33,7 @@ class LevelManager {
     }
 
     loadLevelData(levelId) {
-        this.levelData = getLevelData(levelId);
+        this.levelData = this.game.levels[levelId].data;
         checkLevelData(this.levelData, `Level${levelId}`);
         this.levelName = this.levelData.levelName;
         this.maxAgent = this.levelData.maxAgent;
@@ -179,7 +172,7 @@ class LevelManager {
         this.recording = false;
         this.recordedStates.push(this.statesThisRound);
         if (this.round == this.maxAgent) {
-            this.game.setState('lose');
+            this.game.UI.actions.lose();
             return;
         }
         this.prepareRound(this.round + 1);
@@ -200,7 +193,7 @@ class LevelManager {
                 openDoor: [],
                 pickUpKey: [],
             };
-            this.game.setState('win');
+            this.game.UI.actions.win();
         }
     }
 

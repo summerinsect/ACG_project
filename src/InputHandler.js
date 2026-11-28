@@ -39,10 +39,10 @@ class InputHandler {
             this.game.setState('paused');
         }
         if (this.consume('KeyO')) {
-            this.game.setState('win'); // 直接通关，仅供测试
+            this.game.UI.actions.win(); // 直接通关，仅供测试
         }
         if (this.consume('KeyK')) {
-            this.game.setState('lose'); // 直接失败，仅供测试
+            this.game.UI.actions.lose(); // 直接失败，仅供测试
         }
         if (this.consume('KeyT')) {
             if (this.game.state == 'playing') {
